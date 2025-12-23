@@ -126,7 +126,7 @@ export const SampleTable: React.FC<SampleTableProps> = ({ samples, onEdit, onDel
                         <img 
                           src={sample.imageUrl} 
                           alt={sample.name} 
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
                           onMouseMove={(e) => handleMouseMove(e, sample.imageUrl)}
                           onMouseLeave={handleMouseLeave}
                         />

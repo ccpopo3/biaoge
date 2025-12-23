@@ -69,17 +69,24 @@ export const SampleFormModal: React.FC<SampleFormModalProps> = ({ isOpen, onClos
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // In a real app, this would upload to S3/Cloudinary. Here we just fake it with a random image if they "upload".
     if (e.target.files && e.target.files[0]) {
-      const fakeUrl = `https://picsum.photos/200/200?random=${Date.now()}`;
-      setPreviewImage(fakeUrl);
-      setFormData(prev => ({ ...prev, imageUrl: fakeUrl }));
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setPreviewImage(result);
+        setFormData(prev => ({ ...prev, imageUrl: result }));
+      };
+
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const id = initialData?.id || Math.random().toString(36).substr(2, 9);
+    // Use the previewImage (base64) if available, otherwise fallback or empty
     onSave({ id, ...formData, imageUrl: previewImage || 'https://picsum.photos/200/200' });
     onClose();
   };
@@ -106,9 +113,9 @@ export const SampleFormModal: React.FC<SampleFormModalProps> = ({ isOpen, onClos
               <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 border-b pb-2">基础信息</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 flex items-start space-x-6">
-                  <div className="w-32 h-32 flex-shrink-0 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center overflow-hidden relative group cursor-pointer hover:border-blue-400 transition-colors">
+                  <div className="w-32 h-32 flex-shrink-0 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center overflow-hidden relative group cursor-pointer hover:border-blue-400 transition-colors">
                     {previewImage ? (
-                      <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={previewImage} alt="Preview" className="w-full h-full object-contain p-1" />
                     ) : (
                       <>
                         <Upload size={24} className="text-gray-400 mb-2" />
